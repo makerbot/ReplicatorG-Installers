@@ -1,0 +1,2 @@
+cd launcher
+launcher.exe

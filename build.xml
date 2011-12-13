@@ -1,0 +1,132 @@
+﻿<project name="ReplicatorG" basedir="." default="help">
+
+	<!-- Project name -->
+	<property name="project" value="replicatorg"/>
+	
+	<!-- Set the platform property based on the current environment -->
+	<condition property="platform" value="macosx">
+		<os family="mac" />
+	</condition>
+	<condition property="platform" value="windows">
+		<os family="windows" />
+	</condition>
+	<condition property="platform" value="linux">
+		<os family="unix" />
+	</condition>
+	
+	<!-- directories -->
+	<property name="basedir" value="/"/>
+	<property name="launchdir" value="launcher"/>
+	<property name="distdir" value="dist/"/>
+	<property name="windir" value="${distdir}/windows"/>
+	<property name="linuxdir" value="${distdir}/linux"/>
+	
+	<!-- Load the per-platform properties -->
+	<property file="ant.includes/${os.name}-${os.arch}.properties" />
+	<echo>${os.name}-${os.arch}</echo>
+	
+	<!-- This is a little thing to load the replicatorg version number without 
+		 relying on passed command-line arguments or anything like that 	   -->
+    <loadfile srcfile="version.txt" property="version">
+             <filterchain>
+                     <linecontains>
+                             <contains value="version="/>
+                     </linecontains>
+                     <tokenfilter>
+                             <replacestring from="version=" to=""/>
+                     </tokenfilter>
+             </filterchain>
+     </loadfile>
+
+	<property name="release.name" value="${project}-${version}"/>
+	
+	<!-- Allows us to use the IzPack Ant task -->
+	<property name="izpack.home" value="IzPack/"/>
+	<taskdef name="IzPack" classpath="${izpack.home}/lib/compiler.jar" classname="com.izforge.izpack.ant.IzPackTask"/>
+	
+	<target name="clean">
+		<delete>
+			<fileset file="${basedir}/${release.name}-installer-windows.exe"/>
+		</delete>
+	</target>
+	
+	<target name="cache-local-docs" description="Downloads the ReplicatorG documentation on replicat.org (and other websites?)">
+		<exec executable="wget">
+			<arg value="-r"/>
+			<arg value="-k"/>
+			<arg value="--directory-prefix=./docs"/>
+			<arg value="--timestamping"/>
+			<arg value="replicat.org"/>
+		</exec>
+	</target>
+	
+	<target name = "installer-windows">
+		<!-- Create the izpack installer -->
+		<IzPack input="install.xml"
+				output="replicatorg-installer-windows.jar"
+				installerType="standard"
+				izPackDir="${izpack.home}"
+				basedir="${basedir}"
+		/>
+		<exec executable="python">
+			<arg value="IzPack/utils/wrappers/izpack2exe/izpack2exe.py"/>
+			<arg value="--file=replicatorg-installer-windows.jar"/>
+			<arg value="--file=launcher/"/>
+			<arg value="--file=run.bat"/>
+			<arg value="--output=${basedir}/${release.name}-installer-windows.exe"/>
+			<arg value="--launch-file=run.bat"/>
+		</exec>
+		<!-- Because izpack isn't well documented, I just wasted a day trying to 
+			 build a self-extracting exe, when there's already a tool for that
+		<!- - Pack the installer and launcher in an archive - ->
+		<exec executable="7z.exe" >
+			<arg value="a"/> 					<!- - add files - ->
+			<arg value="winstall-payload.7z"/>  <!- - to this archive - ->
+			<arg value="replicatorg-installer-windows.jar"/>
+			<arg value="run.bat"/>
+			<arg value="${launchdir}/launcher.exe"/>
+			<arg value="${launchdir}/launcher.ini"/>
+			<arg value="${launchdir}/launcher_fr.qm"/>
+		</exec>
+		<!- - make the archive self extracting - ->
+		<concat destfile="${basedir}/${release.name}-installer-windows.exe" binary="yes">
+		    <fileset file="7zS.sfx"/>
+		    <fileset file="sfxconfig.txt"/>
+		    <fileset file="winstall-payload.7z"/>
+		</concat>
+		-->
+		<!-- Clean up -->
+		<delete>
+			<fileset file="replicatorg-installer-windows.jar"/>
+		</delete>
+	</target>
+	
+	<target name="installer" depends="installer-windows" description="Builds all ReplicatorG Installers">
+	</target>
+	
+	<target name="archive-windows" description="Packages the windows distribution in a .zip">
+		<zip destfile="${release.name}-windows.zip" basedir="${windir}"/>
+	</target>
+	
+	<target name="archive-linux" description="Packages the linux distribution in a .tgz">
+		<tar destfile="${release.name}-linux.tgz" compression="gzip" longfile="gnu">
+			<tarfileset dir="${linuxdir}/${release.name}" prefix="${release.name}"/>
+			<tarfileset dir="${linuxdir}/${release.name}" prefix="${release.name}" filemode="755">
+				<include name="replicatorg" />
+				<include name="tools/avrdude" />
+			</tarfileset>
+		</tar>
+	</target>
+	
+	<target name="archive" depends="archive-windows,archive-linux" description="Packages all ReplicatorG distributions in appropriate archives">
+	</target>
+	
+	<!-- Help -->
+	<target name="help" description="Targets for this project">
+		<echo message="Targets for this project"/>
+		<exec executable="ant">
+			<arg value="-p"/>
+		</exec>
+		<antcall target="test"/>
+	</target>
+</project>
