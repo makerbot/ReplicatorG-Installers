@@ -1,4 +1,4 @@
-﻿<project name="ReplicatorG" basedir="." default="help">
+﻿<project name="ReplicatorG Installers" basedir="." default="help">
 
 	<!-- Project name -->
 	<property name="project" value="replicatorg"/>
@@ -17,9 +17,6 @@
 	<!-- directories -->
 	<property name="basedir" value="/"/>
 	<property name="launchdir" value="launcher"/>
-	<property name="distdir" value="dist/"/>
-	<property name="windir" value="${distdir}/windows"/>
-	<property name="linuxdir" value="${distdir}/linux"/>
 	
 	<!-- Load the per-platform properties -->
 	<property file="ant.includes/${os.name}-${os.arch}.properties" />
@@ -43,11 +40,40 @@
 	<!-- Allows us to use the IzPack Ant task -->
 	<property name="izpack.home" value="IzPack/"/>
 	<taskdef name="IzPack" classpath="${izpack.home}/lib/compiler.jar" classname="com.izforge.izpack.ant.IzPackTask"/>
-	
+
 	<target name="clean">
 		<delete>
 			<fileset file="${basedir}/${release.name}-installer-windows.exe"/>
 		</delete>
+	</target>
+
+	<!-- Make sure that the dist or dist-all directory exists, so we have something to package.
+		 What happens if both dist and dist-all are present? It'll default to dist. -->  
+	<target name="dist-check">
+		<condition property="distdir" value="dist/">
+			<available file="dist/" type="dir"/>
+		</condition>
+		<condition property="distdir" value="dist-all/">
+			<and>
+				<not><isset property="distdir"/></not>
+				<available file="dist-all/" type="dir"/>
+			</and>
+		</condition>
+		<fail message="We need a dist or dist-all directory to build the installer" unless="distdir"/>
+	</target>
+
+	<!-- check for platform specific dists --> 
+	<target name="dist-check-windows" depends="dist-check">
+		<available file="dist/" type="dir" property="windir" value="${distdir}/windows"/>
+		<fail message="We need a ${distdir}/windows directory to build the windows installer" unless="windir"/>
+	</target>
+	<target name="dist-check-linux" depends="dist-check">
+		<available file="dist/" type="dir" property="linuxdir" value="${distdir}/linux"/>
+		<fail message="We need a ${distdir}/linux directory to build the linux installer" unless="linuxdir"/>
+	</target>
+	<target name="dist-check-mac" depends="dist-check">
+		<available file="dist/" type="dir" property="macdir" value="${distdir}/macosx"/>
+		<fail message="We need a ${distdir}/macosx directory to build the mac installer" unless="macdir"/>
 	</target>
 	
 	<target name="cache-local-docs" description="Downloads the ReplicatorG documentation on replicat.org (and other websites?)">
@@ -60,7 +86,7 @@
 		</exec>
 	</target>
 	
-	<target name = "installer-windows">
+	<target name="installer-windows" depends="dist-check-windows">
 		<!-- Create the izpack installer -->
 		<IzPack input="install.xml"
 				output="replicatorg-installer-windows.jar"
@@ -76,39 +102,20 @@
 			<arg value="--output=${basedir}/${release.name}-installer-windows.exe"/>
 			<arg value="--launch-file=run.bat"/>
 		</exec>
-		<!-- Because izpack isn't well documented, I just wasted a day trying to 
-			 build a self-extracting exe, when there's already a tool for that
-		<!- - Pack the installer and launcher in an archive - ->
-		<exec executable="7z.exe" >
-			<arg value="a"/> 					<!- - add files - ->
-			<arg value="winstall-payload.7z"/>  <!- - to this archive - ->
-			<arg value="replicatorg-installer-windows.jar"/>
-			<arg value="run.bat"/>
-			<arg value="${launchdir}/launcher.exe"/>
-			<arg value="${launchdir}/launcher.ini"/>
-			<arg value="${launchdir}/launcher_fr.qm"/>
-		</exec>
-		<!- - make the archive self extracting - ->
-		<concat destfile="${basedir}/${release.name}-installer-windows.exe" binary="yes">
-		    <fileset file="7zS.sfx"/>
-		    <fileset file="sfxconfig.txt"/>
-		    <fileset file="winstall-payload.7z"/>
-		</concat>
-		-->
 		<!-- Clean up -->
 		<delete>
 			<fileset file="replicatorg-installer-windows.jar"/>
 		</delete>
 	</target>
 	
-	<target name="installer" depends="installer-windows" description="Builds all ReplicatorG Installers">
+	<target name="installers" depends="installer-windows" description="Builds all ReplicatorG Installers">
 	</target>
 	
-	<target name="archive-windows" description="Packages the windows distribution in a .zip">
+	<target name="archive-windows" depends="dist-check-windows" description="Packages the windows distribution in a .zip">
 		<zip destfile="${release.name}-windows.zip" basedir="${windir}"/>
 	</target>
 	
-	<target name="archive-linux" description="Packages the linux distribution in a .tgz">
+	<target name="archive-linux" depends="dist-check-linux" description="Packages the linux distribution in a .tgz">
 		<tar destfile="${release.name}-linux.tgz" compression="gzip" longfile="gnu">
 			<tarfileset dir="${linuxdir}/${release.name}" prefix="${release.name}"/>
 			<tarfileset dir="${linuxdir}/${release.name}" prefix="${release.name}" filemode="755">
@@ -118,7 +125,7 @@
 		</tar>
 	</target>
 	
-	<target name="archive" depends="archive-windows,archive-linux" description="Packages all ReplicatorG distributions in appropriate archives">
+	<target name="archives" depends="archive-windows,archive-linux" description="Packages all ReplicatorG distributions in appropriate archives">
 	</target>
 	
 	<!-- Help -->
@@ -127,6 +134,5 @@
 		<exec executable="ant">
 			<arg value="-p"/>
 		</exec>
-		<antcall target="test"/>
 	</target>
 </project>
