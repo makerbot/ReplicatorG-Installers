@@ -17,7 +17,7 @@
     -->
     <info>
         <appname>ReplicatorG</appname>
-        <appversion>30</appversion>
+        <appversion>@{version}</appversion>
         <authors>
             <author name="Makerbot Industries" email=""/>
             <author name="The 3D printing community!" email=""/>
@@ -61,18 +61,19 @@
         <panel classname="TargetPanel"/>
         <panel classname="PacksPanel"/>
         <panel classname="InstallPanel"/>
+        <panel classname="ProcessPanel"/>
         <panel classname="ShortcutPanel"/>
         <panel classname="FinishPanel"/>
     </panels>
 
     <!-- 
         The packs section.
-        We specify here our packs.
+        We specify our packs here.
     -->
     <packs>
         <pack name="Base" required="yes">
             <description>The base files</description>
-            <file src="dist" targetdir="$INSTALL_PATH"/>
+            <file src="@{windir}/@{release.name}" targetdir="$INSTALL_PATH"/>
             <!-- The file will be parsed -->
         </pack>
     </packs>

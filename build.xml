@@ -35,6 +35,8 @@
              </filterchain>
      </loadfile>
 
+	<!-- It's important that this matches the release.name defined in RepG's build.xml
+		 because otherwise we can't find the folder where the dist is -->
 	<property name="release.name" value="${project}-${version}"/>
 	
 	<!-- Allows us to use the IzPack Ant task -->
@@ -50,13 +52,13 @@
 	<!-- Make sure that the dist or dist-all directory exists, so we have something to package.
 		 What happens if both dist and dist-all are present? It'll default to dist. -->  
 	<target name="dist-check">
-		<condition property="distdir" value="dist/">
-			<available file="dist/" type="dir"/>
+		<condition property="distdir" value="dist">
+			<available file="dist" type="dir"/>
 		</condition>
-		<condition property="distdir" value="dist-all/">
+		<condition property="distdir" value="dist-all">
 			<and>
 				<not><isset property="distdir"/></not>
-				<available file="dist-all/" type="dir"/>
+				<available file="dist-all" type="dir"/>
 			</and>
 		</condition>
 		<fail message="We need a dist or dist-all directory to build the installer" unless="distdir"/>
@@ -64,33 +66,24 @@
 
 	<!-- check for platform specific dists --> 
 	<target name="dist-check-windows" depends="dist-check">
-		<available file="dist/" type="dir" property="windir" value="${distdir}/windows"/>
+		<available file="${distdir}/windows" type="dir" property="windir" value="${distdir}/windows"/>
 		<fail message="We need a ${distdir}/windows directory to build the windows installer" unless="windir"/>
 	</target>
 	<target name="dist-check-linux" depends="dist-check">
-		<available file="dist/" type="dir" property="linuxdir" value="${distdir}/linux"/>
+		<available file="${distdir}/linux" type="dir" property="linuxdir" value="${distdir}/linux"/>
 		<fail message="We need a ${distdir}/linux directory to build the linux installer" unless="linuxdir"/>
 	</target>
 	<target name="dist-check-mac" depends="dist-check">
-		<available file="dist/" type="dir" property="macdir" value="${distdir}/macosx"/>
+		<available file="${distdir}/macosx" type="dir" property="macdir" value="${distdir}/macosx"/>
 		<fail message="We need a ${distdir}/macosx directory to build the mac installer" unless="macdir"/>
-	</target>
-	
-	<target name="cache-local-docs" description="Downloads the ReplicatorG documentation on replicat.org (and other websites?)">
-		<exec executable="wget">
-			<arg value="-r"/>
-			<arg value="-k"/>
-			<arg value="--directory-prefix=./docs"/>
-			<arg value="--timestamping"/>
-			<arg value="replicat.org"/>
-		</exec>
 	</target>
 	
 	<target name="installer-windows" depends="dist-check-windows">
 		<!-- Create the izpack installer -->
-		<IzPack input="install.xml"
+		<IzPack input="izpack-xml/windows-install.xml"
 				output="replicatorg-installer-windows.jar"
 				installerType="standard"
+				inheritAll="true"
 				izPackDir="${izpack.home}"
 				basedir="${basedir}"
 		/>
@@ -126,6 +119,16 @@
 	</target>
 	
 	<target name="archives" depends="archive-windows,archive-linux" description="Packages all ReplicatorG distributions in appropriate archives">
+	</target>
+
+	<target name="cache-local-docs" description="Downloads the ReplicatorG documentation on replicat.org (and other websites?)">
+		<exec executable="wget">
+			<arg value="-r"/>
+			<arg value="-k"/>
+			<arg value="--directory-prefix=./docs"/>
+			<arg value="--timestamping"/>
+			<arg value="replicat.org"/>
+		</exec>
 	</target>
 	
 	<!-- Help -->
