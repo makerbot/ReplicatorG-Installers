@@ -8,7 +8,6 @@ copy /y * %TEMP%\drivers
 cd "../Makerbot"
 copy /y * %TEMP%\drivers
 cd %TEMP%\drivers
-devcon.exe dp_add MightyBoard.inf
-devcon.exe dp_add Replicator.inf
+dpinst.exe /sw /lm
 devcon.exe rescan
-ping -n 10 127.0.0.1 > nul
+ping -n 30 127.0.0.1 > nul
