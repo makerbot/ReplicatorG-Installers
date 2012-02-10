@@ -8,6 +8,6 @@ copy /y * %TEMP%\drivers
 cd "../Makerbot"
 copy /y * %TEMP%\drivers
 cd %TEMP%\drivers
-dpinst.exe /sw /lm
+dpinst.exe /lm
 devcon.exe rescan
 ping -n 30 127.0.0.1 > nul
