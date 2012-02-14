@@ -11,7 +11,7 @@ Name "ReplicatorG Installer"
 OutFile "ReplicatorG-Install.exe"
 
 ; The default installation directory
-InstallDir $PROGRAMFILES\ReplicatorG
+InstallDir $DOCUMENTS\ReplicatorG
 
 ; Request application privileges for Windows Vista
 RequestExecutionLevel highest
@@ -121,5 +121,9 @@ Section "" ;No components page, name is not important
   File /r "drivers\"
   
   ExecWait 'install-drivers.bat'
+
+  # create a shortcut named "new shortcut" in the start menu programs directory
+  # point the new shortcut at the program uninstaller
+  createShortCut "$SMPROGRAMS\ReplicatorG.lnk" "$INSTDIR\replicatorg-0031_Beta\ReplicatorG.exe"
   
 SectionEnd ; end the section
