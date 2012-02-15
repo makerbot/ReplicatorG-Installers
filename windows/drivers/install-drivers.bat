@@ -1,5 +1,4 @@
 mkdir %TEMP%\drivers
-copy /y devcon.exe %TEMP%\drivers
 if %PROCESSOR_ARCHITECTURE% == x86 goto :x86
 copy /y dpinst64.exe %TEMP%\drivers\dpinst.exe
 goto :enddpinst
@@ -15,7 +14,6 @@ copy /y * %TEMP%\drivers
 cd %TEMP%\drivers
 
 dpinst.exe /lm
-devcon.exe rescan
 
 
 ping -n 30 127.0.0.1 > nul
