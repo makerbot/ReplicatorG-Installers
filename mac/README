@@ -1,0 +1,10 @@
+How to create a mac installer (not totally automatic yet)
+
+1) Download yoursway-create-dmg from makerbot github.
+
+2) Put these files/folders in the same directory.
+
+3) Run the command, like specified below.  Note that I put ReplicatorG.app in a sub-folder of the build folder, so it is alone
+
+/create-dmg --icon ReplicatorG.app 100 225 --window-size 500 350 --icon-size 96 --volname Replicator\ Installer --volicon ReplicatorAirDiskIcon.icns --background replicatorg_osx_installer_bg.png t.dmg '../ReplicatorG/dist/macosx/replicatorg-0031_Beta/tmp/'
+
