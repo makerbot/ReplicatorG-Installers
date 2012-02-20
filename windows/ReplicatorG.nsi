@@ -3,6 +3,7 @@
 
 !include nsDialogs.nsh
 !include LogicLib.nsh
+!include x64.nsh
 
 ; The name of the installer
 Name "ReplicatorG Installer"
@@ -124,9 +125,15 @@ Section "" ;No components page, name is not important
   
   ; Set output path to the driver directory.
   SetOutPath "$INSTDIR\drivers\"
-  File /r "drivers\"
+  File "drivers\"
+  File /r "drivers\FTDI USB Drivers\"
+  File /r "drivers\Arduino Mega 2560 usbser Driver\"
+  File /r "drivers\Makerbot\"
   
-  ExecWait 'install-drivers.bat'
-
+  ${If} ${RunningX64}
+    ExecWait '"$INSTDIR\drivers\dpinst64.exe" /lm'
+  ${Else}
+    ExecWait '"$INSTDIR\drivers\dpinst32.exe" /lm'
+  ${EndIf}
   
 SectionEnd ; end the section
