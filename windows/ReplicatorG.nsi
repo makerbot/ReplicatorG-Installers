@@ -118,10 +118,10 @@ Section "" ;No components page, name is not important
   File /r "..\dist-all\windows\replicatorg-*"
   
   ; Set output path to the installation directory.
-  SetOutPath "$INSTDIR\replicatorg-0031_Beta"
+  SetOutPath "$INSTDIR\replicatorg-0033"
   # create a shortcut in the start menu programs directory
   # point the new shortcut at the program
-  createShortCut "$SMPROGRAMS\ReplicatorG.lnk" "$INSTDIR\replicatorg-0031_Beta\ReplicatorG.exe"
+  createShortCut "$SMPROGRAMS\ReplicatorG.lnk" "$INSTDIR\replicatorg-0033\ReplicatorG.exe"
   
   ; Set output path to the driver directory.
   SetOutPath "$INSTDIR\drivers\"
