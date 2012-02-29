@@ -5,10 +5,10 @@
 !include LogicLib.nsh
 
 ; The name of the installer
-Name "ReplicatorG Installer"
+Name "ReplicatorG 0031 Installer"
 
 ; The file to write
-OutFile "ReplicatorG-Install.exe"
+OutFile "ReplicatorG-0031-Install.exe"
 
 ; The default installation directory
 InstallDir $DOCUMENTS\ReplicatorG
@@ -116,13 +116,7 @@ Section "" ;No components page, name is not important
   ; Put file there
   File /r "..\dist-all\windows\replicatorg-*"
   
-  ; Set output path to the installation directory.
-  SetOutPath "$INSTDIR\replicatorg-0031_Beta"
-  # create a shortcut in the start menu programs directory
-  # point the new shortcut at the program
-  createShortCut "$SMPROGRAMS\ReplicatorG.lnk" "$INSTDIR\replicatorg-0031_Beta\ReplicatorG.exe"
-  
-  ; Set output path to the driver directory.
+    ; Set output path to the driver directory.
   SetOutPath "$INSTDIR\drivers\"
   File /r "drivers\"
   
@@ -130,3 +124,21 @@ Section "" ;No components page, name is not important
 
   
 SectionEnd ; end the section
+
+;;; From http://nsis.sourceforge.net/Shortcuts_removal_fails_on_Windows_Vista 
+;Section Shortcuts ; shortcut generation
+;  RequestExecutionLevel admin
+;
+; Set output path to the installation directory.
+;  SetOutPath "$INSTDIR\replicatorg-0031"
+;  # create a shortcut in the start menu programs directory
+;  # point the new shortcut at the program
+;  createShortCut "$SMPROGRAMS\ReplicatorG-0031.lnk" "$INSTDIR\replicatorg-0031\ReplicatorG.exe"
+;  WriteUninstaller $EXEDIR\replicatorg-0031-unist.exe
+;
+;SectionEnd
+
+;Section uninstall
+;  SetShellVarContext all
+;  Delete "$SMPROGRAMS\ReplicatorG-0031.lnk"
+;SectionEnd
