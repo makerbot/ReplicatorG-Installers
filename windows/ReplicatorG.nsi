@@ -6,10 +6,10 @@
 !include x64.nsh
 
 ; The name of the installer
-Name "ReplicatorG 0033 Installer"
+Name "ReplicatorG 0039 Installer"
 
 ; The file to write
-OutFile "ReplicatorG-0033-Install.exe"
+OutFile "ReplicatorG-0039-Install.exe"
 
 ; The default installation directory
 InstallDir $DOCUMENTS\ReplicatorG
@@ -136,12 +136,12 @@ SectionEnd ; end the section
 Section Shortcuts ; shortcut generation
 
   ;Set output path to the installation directory.
-  SetOutPath "$INSTDIR\replicatorg-0033"
+  SetOutPath "$INSTDIR\replicatorg-0039"
   # create a shortcut in the start menu programs directory
   # point the new shortcut at the program
   Delete "$SMPROGRAMS\ReplicatorG.lnk"
-  createShortCut "$SMPROGRAMS\ReplicatorG.lnk" "$INSTDIR\replicatorg-0033\ReplicatorG.exe"
-  ;WriteUninstaller replicatorg-0033-unist.exe
+  createShortCut "$SMPROGRAMS\ReplicatorG.lnk" "$INSTDIR\replicatorg-0039\ReplicatorG.exe"
+  ;WriteUninstaller replicatorg-0039-unist.exe
 
 SectionEnd
 
