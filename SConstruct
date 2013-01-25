@@ -14,7 +14,7 @@ env = Environment(ENV = os.environ)
 
 env.Tool('mb_install', toolpath=[Dir('submodule/mw-scons-tools')])
 
-if 'win32' == sys.platform:
+if env.MBIsWindows():
   env.MBInstallSystem(os.path.join('windows', 'drivers'), 'drivers')
 
 env.MBCreateInstallTarget()
